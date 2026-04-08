@@ -1,58 +1,58 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
-  title: Todo-Listen-Verwaltung
-  description: ""
-  contact:
-    email: wichmann@bbs-os-brinkstr.de
+  title: Todo-Listen API
+  version: 1.0.0
+  description: REST-Schnittstelle zur Verwaltung von Todo-Listen und deren Einträgen.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.1.0
+
 servers:
-  - url: http://127.0.0.1:5000/
-tags:
-  - name: Listenverwaltung
+  - url: https://127.0.0.1:5000/
+  
 paths:
   /todo-list:
+    get:
+      summary: Alle Todo-Listen abrufen
+      responses:
+        '200':
+          description: Liste aller Todo-Listen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
     post:
-      tags:
-      - Listenverwaltung
-      summary: Add new list
-      operationId: addList
+      summary: Neue Todo-Liste anlegen
       requestBody:
-        description: list object
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TodoList'
-        required: true
+              $ref: '#/components/schemas/TodoListCreate'
       responses:
-        '200':
-          description: List added
+        '201':
+          description: Todo-Liste erfolgreich erstellt
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TodoList'
-        '500':
-          description: List could not be added
-          content: {}
-      x-codegen-request-body-name: body
+        '400':
+          description: Ungültiger Request-Body
+
   /todo-list/{list_id}:
     get:
-      tags:
-      - Listenverwaltung
-      summary: Get all items from list
-      operationId: getList
+      summary: Alle Einträge einer Todo-Liste abrufen
       parameters:
-      - name: list_id
-        in: path
-        description: list id
-        required: true
-        schema:
-          type: string
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: List item returned
+          description: Liste aller Einträge der gegebenen Liste
           content:
             application/json:
               schema:
@@ -60,56 +60,86 @@ paths:
                 items:
                   $ref: '#/components/schemas/TodoEntry'
         '404':
-          description: Invalid list id
-          content: {}
+          description: Liste mit dieser ID wurde nicht gefunden
     delete:
-      tags:
-      - Listenverwaltung
-      summary: Delete a list
-      operationId: deleteList
+      summary: Eine komplette Todo-Liste löschen
       parameters:
-      - name: list_id
-        in: path
-        description: list id
-        required: true
-        schema:
-          type: string
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
-        '200':
-          description: List was deleted
-          content: {}
+        '204':
+          description: Liste erfolgreich gelöscht
         '404':
-          description: Invalid list id
-          content: {}
-  /todo-list/entry/{entry_id}:
-    patch:
-      summary: Updates saved entry
+          description: Liste mit dieser ID wurde nicht gefunden
+    post:
+      summary: Eintrag zu bestehender Todo-Liste hinzufügen
       parameters:
-      - name: entry_id
-        in: path
-        description: entry id
-        required: true
-        schema:
-          type: string
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              name:
-                type: string
-              description: 
-                type: string
+              $ref: '#/components/schemas/TodoEntryCreate'
+      responses:
+        '201':
+          description: Eintrag erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+        '400':
+          description: Ungültiger Request-Body
+        '404':
+          description: Liste mit dieser ID wurde nicht gefunden
+
+  /todo-list/entry/{entry_id}:
+    patch:
+      summary: Bestehenden Eintrag aktualisieren
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntryUpdate'
       responses:
         '200':
-          description: sucessfully changed
-          content: {}
+          description: Eintrag erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
         '400':
-          description: invalid body
-          content: {}
+          description: Ungültiger Request-Body
         '404':
-          description: invalid id
-          content: {}
+          description: Eintrag mit dieser ID wurde nicht gefunden
+    delete:
+      summary: Einzelnen Eintrag löschen
+      parameters:
+        - name: entry_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Eintrag erfolgreich gelöscht
+        '404':
+          description: Eintrag mit dieser ID wurde nicht gefunden
+
 components:
   schemas:
     TodoList:
@@ -117,22 +147,63 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
+      required:
+        - id
+        - name
+
+    TodoListCreate:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
     TodoEntry:
       type: object
       properties:
         id:
           type: string
-          format: uuid
+        listId:
+          type: string
         name:
           type: string
         description:
           type: string
-        user_id:
+      required:
+        - id
+        - listId
+        - name
+
+    TodoEntryCreate:
+      type: object
+      properties:
+        name:
           type: string
-          format: uuid
-        list_id:
+        description:
           type: string
-          format: uuid
+      required:
+        - name
+
+    TodoEntryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+  responses:
+    TooManyRequests:
+      description: Zu viele Anfragen
+    ServerError:
+      description: Interner Serverfehler
+    InvalidMethod:
+      description: Ungültige HTTP-Methode für diesen Endpunkt
+    InvalidEndpoint:
+      description: Ungültiger Endpunkt
+
+  # Optional: globale Fehlercodes als Beispiel
+  # Diese können über $ref in den einzelnen Operationen verwendet werden
