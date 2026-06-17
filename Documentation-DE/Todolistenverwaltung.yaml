@@ -4,8 +4,8 @@ info:
   version: 1.0.0
   description: REST-Schnittstelle zur Verwaltung von Todo-Listen und deren Einträgen.
   license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    name: MIT License
+    url: https://opensource.org/license/mit
 
 servers:
   - url: https://127.0.0.1:5000/
