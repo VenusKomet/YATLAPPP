@@ -34,15 +34,19 @@ Mit `ping 8.8.8.8` kann man die erreichbarkeit ins "Internet" / google DNS teste
 ## Neuen Benutzer anlegen
 
 Benutzer ohne Sudo-Rechten anlegen:
-    sudo adduser willi
-        passwort: Schule123!
-        Alles andere Optional im Dialog
+```
+sudo adduser willi
+    passwort: Schule123!
+    Alles andere Optional im Dialog
+```
 
 Benutzer mit Sudo-Rechten anlegen:
-    sudo adduser fernzugriff
-        passwort: Schule123!
-        Alles andere Optional im Dialog
-    sudo usermod -aG sudo fernzugriff
+```
+sudo adduser fernzugriff
+    passwort: Schule123!
+    Alles andere Optional im Dialog
+sudo usermod -aG sudo fernzugriff
+```
 
 ## SSH Konfiguration
 SSH Server wurde bereits mit der Server installation installiert.
@@ -51,9 +55,11 @@ Folgenden Befehl ausführen:
 `sudo nano /etc/ssh/sshd_config`
 
 Einstellungen in der Datei:
-    \#PermitRootLogin prohibit-password -> PermitRootLogin no
-    \#PasswordAuthentication yes -> PasswordAuthentication yes
+```
+    #PermitRootLogin prohibit-password -> PermitRootLogin no
+    #PasswordAuthentication yes -> PasswordAuthentication yes
     AllowUsers fernzugriff
+```
 
 Das AllowUsers muss hinzugefügt werden, dass man sich nur über den fernzugriff user per ssh anmelden kann.
 
