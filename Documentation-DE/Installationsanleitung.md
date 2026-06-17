@@ -86,6 +86,9 @@ In den Ordner wechseln
 Docker Image für einen Container erstellen: `sudo docker image build -t webapi .`
 Docker Container starten: `sudo docker run -p 5000:5000 -d webapi`
 
+Damit der Docker Container auch aktiv bleibt, wenn der Server einen Neustart durchführt, kann folgender befehl verwendet werden:
+`sudo docker run --restart unless-stopped -p 5000:5000 -d webapi`
+
 Testen ob der Docker Container läuft:
 `sudo docker ps`
 
