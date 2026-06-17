@@ -56,8 +56,16 @@ def get_todo_lists():
 
 @app.route('/todo-list', methods=['POST'])
 def create_todo_list():
-    new_list = request.get_json(force=True)
-    new_list['id'] = generate_id()
+    data = request.get_json()
+
+    if not data or 'name' in data:
+        abort(400, description="Field 'name' is required")
+
+    new_list = {
+        'id': generate_id(),
+        'name': data['name']
+    }
+
     todo_lists.append(new_list)
     return jsonify(new_list), 201
 
@@ -92,9 +100,17 @@ def add_todo_list_entry(list_id):
     if not find_list(list_id):
         abort(404)
 
-    new_todo = request.get_json(force=True)
-    new_todo['id'] = generate_id()
-    new_todo['list'] = list_id
+    data = request.get_json()
+
+    if not data or 'name' not in data:
+        abort(400, description="Field 'name' is required")
+
+    new_todo = {
+        'id': generate_id(),
+        'name': data['name'],
+        'description': data.get('description', ''),
+        'list': list_id
+    }
 
     todos.append(new_todo)
     return jsonify(new_todo), 201
@@ -107,12 +123,15 @@ def modify_todo_list_entry(entry_id):
     if not entry:
         abort(404)
 
-    updates = request.get_json(force=True)
+    data = request.get_json()
+
+    if data is None:
+        abort(400, description="Invalid JSON")
 
     # update only allowed fields
     entry.update({
-        'name': updates.get('name', entry['name']),
-        'description': updates.get('description', entry['description'])
+        'name': data.get('name', entry['name']),
+        'description': data.get('description', entry['description'])
     })
 
     return jsonify(entry), 200
