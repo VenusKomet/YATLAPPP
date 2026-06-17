@@ -8,7 +8,7 @@ info:
     url: https://opensource.org/license/mit
 
 servers:
-  - url: https://127.0.0.1:5000/
+  - url: http://127.0.0.1:5000/
   
 paths:
   /todo-list:
@@ -166,7 +166,7 @@ components:
       properties:
         id:
           type: string
-        listId:
+        list:
           type: string
         name:
           type: string
@@ -174,7 +174,7 @@ components:
           type: string
       required:
         - id
-        - listId
+        - list
         - name
 
     TodoEntryCreate:

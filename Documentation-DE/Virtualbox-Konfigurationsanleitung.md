@@ -3,7 +3,7 @@ Betriebssystem:
 
 Voraussetzungen:
 - ISO -> Ubuntu Server 26.04
-- Virtual Box 7.2.8
+- Virtual Box 7.2.8 oder höher
 
 # VM Setup
 Unter Virtual Box eine neue VM erstellen:
